@@ -1,4 +1,4 @@
-package pool
+package route
 
 // Job represents the job to be run
 type Job struct {
@@ -15,11 +15,11 @@ type Worker struct {
 	// Worker 空闲时，将自己的 JobChannel 放入 WorkerPool 中。
 	// Dispatcher 收到新的 Job 时，从 JobChannel 中取出一个 chan， 并将 Job
 	// 放入其中，此时 Worker 将从 Chan 中接收到 Job，并进行处理
-	WorkerPool  chan chan Job
+	WorkerPool chan chan Job
 	// Worker 用于接收 Job 的 chan
-	JobChannel  chan Job
+	JobChannel chan Job
 	// 用于给 Worker 发送控制命令的 chan，用于停止 chan
-	quit            chan bool
+	quit chan bool
 }
 
 func NewWorker(workerPool chan chan Job) Worker {
@@ -56,7 +56,6 @@ func (w Worker) Stop() {
 		w.quit <- true
 	}()
 }
-
 
 type Dispatcher struct {
 	// A pool of workers channels that are registered with the dispatcher
@@ -97,7 +96,8 @@ func (d *Dispatcher) dispatch() {
 }
 
 var dispatcher *Dispatcher
-func init()  {
+
+func init() {
 	dispatcher = NewDispatcher(10)
 	dispatcher.Run()
 }
