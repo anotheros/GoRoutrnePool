@@ -77,7 +77,20 @@ func (d *Dispatcher) Run() {
 
 	go d.dispatch()
 }
+/*base on job to select a worker.*/
+func (d *Dispatcher) dispatch0() {
+	for {
+		select {
+		case job := <-JobQueue:
+			go func(job Job) {
+				jobChannel := <-d.WorkerPool
+				jobChannel <- job
+			}(job)
+		}
+	}
+}
 
+/*base on worker to select a job.*/
 func (d *Dispatcher) dispatch() {
 	for {
 		select {
